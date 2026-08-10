@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply - JobApply</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3575487613290267"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">💼 Job<span>Apply</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">My Applications</a>
+      </nav>
+      <div class="header-right">
+        <a href="index.html" class="btn btn-outline">← Back to Jobs</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="two-col">
+      <div class="main-content">
+        <div class="form-card">
+          <h1 id="apply-heading">Apply for this job</h1>
+          <p class="subtitle" id="apply-subtitle">Fill in your details below. Fields marked <span style="color: var(--danger);">*</span> are required.</p>
+
+          <form id="apply-form" novalidate>
+            <input type="hidden" id="job-id" value="" />
+
+            <div class="form-group">
+              <label for="full-name">Full Name <span class="req">*</span></label>
+              <input type="text" id="full-name" placeholder="e.g. Ravi Kumar" autocomplete="name" />
+              <p class="error">Please enter your full name (min 3 characters).</p>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email <span class="req">*</span></label>
+              <input type="email" id="email" placeholder="e.g. ravi@example.com" autocomplete="email" />
+              <p class="error">Please enter a valid email address.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone <span class="req">*</span></label>
+              <input type="tel" id="phone" placeholder="e.g. +91 98765 43210" autocomplete="tel" />
+              <p class="error">Please enter a valid phone number (10+ digits).</p>
+            </div>
+
+            <div class="form-group">
+              <label for="location">Current Location</label>
+              <input type="text" id="location" placeholder="e.g. Chennai" autocomplete="address-level2" />
+              <small>City you are currently based in.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="experience">Experience <span class="req">*</span></label>
+              <select id="experience">
+                <option value="">Select experience level</option>
+                <option value="Fresher">Fresher</option>
+                <option value="0-1 years">0-1 years</option>
+                <option value="1-3 years">1-3 years</option>
+                <option value="3-5 years">3-5 years</option>
+                <option value="5+ years">5+ years</option>
+              </select>
+              <p class="error">Please select your experience level.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="resume">Resume (PDF) <span class="req">*</span></label>
+              <input type="file" id="resume" class="file-input" accept=".pdf,.doc,.docx" />
+              <p class="error">Please upload your resume (PDF, DOC, or DOCX, max 5 MB).</p>
+              <p class="file-hint" id="file-hint"></p>
+            </div>
+
+            <div class="form-group">
+              <label for="cover-letter">Cover Letter</label>
+              <textarea id="cover-letter" rows="5" placeholder="Why are you a good fit for this role?"></textarea>
+              <small>Optional, but recommended.</small>
+            </div>
+
+            <button type="submit" class="btn btn-block" id="submit-btn">Submit Application</button>
+          </form>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <!-- Google AdSense - Sidebar rectangle -->
+        <div class="ad-unit">
+          <div class="ad-label">Advertisement</div>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-3575487613290267"
+               data-ad-slot="SIDEBAR_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <div class="side-card">
+          <h3>Job summary</h3>
+          <div id="job-summary" style="font-size: 14px; color: var(--text-muted);">
+            Loading job details...
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JobApply · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+  </footer>
+
+  <script src="js/jobs.js"></script>
+  <script src="js/apply.js"></script>
+</body>
+</html>

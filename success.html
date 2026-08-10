@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Submitted - JobApply</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3575487613290267"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">💼 Job<span>Apply</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">My Applications</a>
+      </nav>
+      <div class="header-right">
+        <a href="index.html" class="btn btn-outline">← Back to Jobs</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="main-content" style="max-width: 720px; margin: 0 auto;">
+      <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h1>Application Submitted!</h1>
+        <p>Your application has been recorded successfully. We wish you the best of luck.</p>
+
+        <div class="summary-box" id="summary-box">
+          <p>Loading application summary...</p>
+        </div>
+
+        <a href="index.html" class="btn">Browse More Jobs</a>
+      </div>
+
+      <!-- Google AdSense - Footer banner -->
+      <div class="ad-unit" style="margin-top: 24px;">
+        <div class="ad-label">Advertisement</div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-3575487613290267"
+             data-ad-slot="FOOTER_SLOT_ID"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JobApply · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+  </footer>
+
+  <script>
+    (function () {
+      var yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      var box = document.getElementById("summary-box");
+      try {
+        var app = JSON.parse(localStorage.getItem("jobapply_last_application"));
+        if (app) {
+          var date = new Date(app.submittedAt).toLocaleString();
+          box.innerHTML =
+            "<p><strong>Job:</strong> " + app.jobTitle + " at " + app.company + "</p>" +
+            "<p><strong>Applicant:</strong> " + app.fullName + " (" + app.email + ")</p>" +
+            "<p><strong>Experience:</strong> " + app.experience + "</p>" +
+            "<p><strong>Resume:</strong> " + app.resumeName + "</p>" +
+            "<p><strong>Submitted:</strong> " + date + "</p>" +
+            "<p style='color: var(--text-muted); margin-top: 8px;'>A confirmation will be sent to your email once the recruiter reviews your profile.</p>";
+        } else {
+          box.innerHTML = "<p>No recent application found.</p>";
+        }
+      } catch (e) {
+        box.innerHTML = "<p>No recent application found.</p>";
+      }
+    })();
+  </script>
+</body>
+</html>

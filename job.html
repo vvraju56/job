@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Details - JobApply</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3575487613290267"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">💼 Job<span>Apply</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">My Applications</a>
+      </nav>
+      <div class="header-right">
+        <a href="index.html" class="btn btn-outline">← Back to Jobs</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="two-col">
+      <div class="main-content">
+        <div class="job-detail" id="job-detail">
+          <p style="color: var(--text-muted);">Loading job details...</p>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="side-card">
+          <h3>Quick actions</h3>
+          <a class="btn btn-block" id="apply-link" href="#">Apply Now</a>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">
+            Applications take less than 2 minutes.
+          </p>
+        </div>
+
+        <!-- Google AdSense - Sidebar rectangle -->
+        <div class="ad-unit">
+          <div class="ad-label">Advertisement</div>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-3575487613290267"
+               data-ad-slot="SIDEBAR_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <div class="side-card">
+          <h3>About the company</h3>
+          <div id="company-box" style="font-size: 14px; color: var(--text-muted);">
+            Loading...
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JobApply · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+  </footer>
+
+  <script src="js/jobs.js"></script>
+  <script src="js/job-details.js"></script>
+</body>
+</html>
