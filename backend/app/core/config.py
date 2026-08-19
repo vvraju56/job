@@ -54,6 +54,18 @@ class Settings(BaseSettings):
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
+    @property
+    def database_url_for_logging(self) -> str:
+        """DATABASE_URL with the password redacted, safe to log."""
+        url = self.DATABASE_URL
+        if "://" in url:
+            scheme, _, rest = url.partition("://")
+            if "@" in rest:
+                userinfo, _, host = rest.partition("@")
+                user, _, _pw = userinfo.partition(":")
+                return f"{scheme}://{user}:***@{host}"
+        return url
+
 
 @lru_cache
 def get_settings() -> Settings:

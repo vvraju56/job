@@ -1,6 +1,10 @@
 """FastAPI application entrypoint."""
 import asyncio
+import logging
+import traceback
 from contextlib import asynccontextmanager
+
+logger = logging.getLogger("uvicorn.error")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,7 +30,13 @@ async def lifespan(app: FastAPI):
         from alembic import command
         from alembic.config import Config
 
-        await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
+        try:
+            await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
+        except Exception:
+            logger.error("Startup migration failed. DATABASE_URL=%s",
+                         settings.database_url_for_logging)
+            traceback.print_exc()
+            raise
     yield
 
 
