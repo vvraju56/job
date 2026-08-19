@@ -1,0 +1,46 @@
+# Render Blueprint — Makeable Jobs API
+# Requires the following env vars set in the Render dashboard (or via blueprint):
+#   DATABASE_URL                 Supabase PostgreSQL (postgresql+asyncpg://...)
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+#   FIREBASE_CREDENTIALS_JSON    raw service-account JSON (single line)
+#   FIREBASE_PROJECT_ID
+#   SERPAPI_API_KEY, USAJOBS_API_KEY, USAJOBS_EMAIL, JSEARCH_API_KEY
+#   SECRET_KEY
+services:
+  - type: web
+    name: makeable-jobs-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: CORS_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000,https://makeable-jobs.vercel.app
+      - key: ENABLED_PROVIDERS
+        value: serpapi,jsearch,usajobs,remoteok
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: SERPAPI_API_KEY
+        sync: false
+      - key: USAJOBS_API_KEY
+        sync: false
+      - key: USAJOBS_EMAIL
+        sync: false
+      - key: JSEARCH_API_KEY
+        sync: false

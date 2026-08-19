@@ -1,5 +1,59 @@
+# Dependencies
 node_modules/
-.wrangler/
+.venv/
+
+# Build artifacts
+.next/
+build/
+dist/
+out/
+coverage/
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
 .DS_Store
 Thumbs.db
+
+# Local secrets — never commit API keys
+.env
+.env.*
+!.env.example
+apikey.txt
+
+# Firebase service accounts & config (regenerated per environment)
+firebase-service-account.json
+makeable-jobs-firebase-adminsdk-*.json
+google-services.json
+google-services.json.bak
+GoogleService-Info.plist
+
+# Local databases
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Flutter
+mobile/android/app/.dart_tool/
+mobile/.dart_tool/
+mobile/.flutter-plugins-dependencies
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/android/local.properties
+
+# Misc
+.wrangler/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
