@@ -1,4 +1,5 @@
 """FastAPI application entrypoint."""
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -25,7 +26,7 @@ async def lifespan(app: FastAPI):
         from alembic import command
         from alembic.config import Config
 
-        command.upgrade(Config("alembic.ini"), "head")
+        await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
     yield
 
 
