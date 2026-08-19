@@ -77,4 +77,4 @@ async def test_broadcast_notification(client: AsyncClient, auth_headers: dict[st
     assert resp.json()["sent"] >= 1
 
     notifs = await client.get("/api/v1/notifications/", headers=auth_headers)
-    assert any(n["title"] == "Welcome" for n in notifs.json())
+    assert any(n["title"] == "Welcome" for n in notifs.json()["notifications"])

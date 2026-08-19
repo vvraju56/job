@@ -13,6 +13,7 @@ export const SERVER_API_URL =
 async function serverFetch<T>(path: string, revalidate = 60): Promise<T> {
   const res = await fetch(`${SERVER_API_URL}${path}`, {
     next: { revalidate },
+    signal: AbortSignal.timeout(60000),
   });
   if (!res.ok) {
     throw new Error(`API ${res.status} for ${path}`);
@@ -47,8 +48,9 @@ export const serverApi = {
   similarJobs: (id: string, limit = 5) =>
     serverFetch<Job[]>(`/jobs/${id}/similar?limit=${limit}`),
   companies: (limit = 24) => serverFetch<Company[]>(`/companies?limit=${limit}`),
-  featuredCompanies: (limit = 6) =>
-    serverFetch<Company[]>(`/companies/featured?limit=${limit}`),
+  featuredCompanies: async (limit = 6) =>
+    (await serverFetch<{ companies: Company[] }>(`/companies/featured?limit=${limit}`))
+      .companies,
   company: (slug: string) => serverFetch<Company>(`/companies/${slug}`),
   companyJobs: (companyName: string, limit = 20) =>
     serverFetch<JobList>(

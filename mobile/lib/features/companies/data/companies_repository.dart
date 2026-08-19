@@ -12,14 +12,18 @@ class CompaniesRepository {
   }
 
   Future<List<Company>> trendingCompanies({int limit = 10}) async {
-    final response = await _api.get<List<dynamic>>(
+    final response = await _api.get<dynamic>(
       '/companies/trending',
       query: {'limit': limit},
     );
     final list = <Company>[];
     final raw = response.data;
-    if (raw is List) {
-      for (final e in raw) {
+    dynamic items = raw;
+    if (raw is Map<String, dynamic>) {
+      items = raw['companies'] ?? raw['items'] ?? raw['results'];
+    }
+    if (items is List) {
+      for (final e in items) {
         if (e is Map<String, dynamic>) list.add(Company.fromJson(e));
       }
     }

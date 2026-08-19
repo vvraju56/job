@@ -67,7 +67,9 @@ export const companiesService = {
     api.get<Company[]>(
       `/companies${search ? `?search=${encodeURIComponent(search)}` : `?limit=${limit}`}`,
     ),
-  featured: (limit = 6) => api.get<Company[]>(`/companies/featured?limit=${limit}`),
+  featured: async (limit = 6) =>
+    (await api.get<{ companies: Company[] }>(`/companies/featured?limit=${limit}`))
+      .companies,
   detail: (slug: string) => api.get<Company>(`/companies/${slug}`),
 };
 
@@ -86,11 +88,13 @@ export const usersService = {
   updateProfile: (patch: Partial<User>) => api.patch<User>("/users/me", patch),
   updatePreferences: (prefs: Record<string, unknown>) =>
     api.patch<User>("/users/me/preferences", prefs),
-  savedJobs: () => api.get<Job[]>("/users/me/saved-jobs"),
-  applications: (status?: AppStatus) =>
-    api.get<Application[]>(
-      `/users/me/applications${status ? `?status_filter=${status}` : ""}`,
-    ),
+  savedJobs: async () => (await api.get<{ jobs: Job[] }>("/users/me/saved-jobs")).jobs,
+  applications: async (status?: AppStatus) =>
+    (
+      await api.get<{ applications: Application[] }>(
+        `/users/me/applications${status ? `?status_filter=${status}` : ""}`,
+      )
+    ).applications,
   createApplication: (payload: {
     job_id?: string;
     company_name?: string;
@@ -137,13 +141,15 @@ export const resumeService = {
 };
 
 export const notificationsService = {
-  list: (unreadOnly = false, limit = 50) =>
-    api.get<AppNotification[]>(
-      `/notifications/?unread_only=${unreadOnly}&limit=${limit}`,
-    ),
+  list: async (unreadOnly = false, limit = 50) =>
+    (
+      await api.get<{ notifications: AppNotification[] }>(
+        `/notifications/?unread_only=${unreadOnly}&limit=${limit}`,
+      )
+    ).notifications,
   markRead: (id: string) => api.post<AppNotification>(`/notifications/${id}/read`),
   markAllRead: () => api.post<null>("/notifications/read-all"),
-  alerts: () => api.get<Alert[]>("/notifications/alerts"),
+  alerts: async () => (await api.get<{ alerts: Alert[] }>("/notifications/alerts")).alerts,
   createAlert: (payload: {
     query: string;
     filters?: Record<string, unknown>;

@@ -54,10 +54,12 @@ class NotificationsRepository {
   final ApiClient _api;
 
   Future<List<AppNotification>> list() async {
-    final response = await _api.get<Map<String, dynamic>>('/notifications');
-    final raw = response.data!;
+    final response = await _api.get<dynamic>('/notifications');
+    final raw = response.data;
     final items =
-        raw['items'] ?? raw['notifications'] ?? raw['results'] ?? raw;
+        raw is Map<String, dynamic>
+        ? raw['items'] ?? raw['notifications'] ?? raw['results'] ?? raw
+        : raw;
     final list = <AppNotification>[];
     if (items is List) {
       for (final e in items) {

@@ -9,9 +9,11 @@ from app.models.models import Application, Job, SavedJob, Search, User
 from app.schemas.schemas import (
     ApplicationCreate,
     ApplicationOut,
+    ApplicationsOut,
     ApplicationStatusUpdate,
     JobOut,
     PreferencesUpdate,
+    SavedJobsOut,
     SearchOut,
     UserOut,
     UserUpdate,
@@ -42,24 +44,24 @@ async def update_preferences(db: DbDep, user: CurrentUser, payload: PreferencesU
     return user
 
 
-@router.get("/me/saved-jobs", response_model=list[JobOut])
-async def saved_jobs(db: DbDep, user: CurrentUser) -> list[Job]:
+@router.get("/me/saved-jobs", response_model=SavedJobsOut)
+async def saved_jobs(db: DbDep, user: CurrentUser) -> dict:
     result = await db.execute(
         select(Job)
         .join(SavedJob, SavedJob.job_id == Job.id)
         .where(SavedJob.user_id == user.id, Job.active.is_(True))
         .order_by(SavedJob.created_at.desc())
     )
-    return list(result.scalars().all())
+    return {"jobs": list(result.scalars().all())}
 
 
-@router.get("/me/applications", response_model=list[ApplicationOut])
-async def applications(db: DbDep, user: CurrentUser, status_filter: str | None = None) -> list[Application]:
+@router.get("/me/applications", response_model=ApplicationsOut)
+async def applications(db: DbDep, user: CurrentUser, status_filter: str | None = None) -> dict:
     stmt = select(Application).where(Application.user_id == user.id)
     if status_filter:
         stmt = stmt.where(Application.status == status_filter)
     result = await db.execute(stmt.order_by(Application.applied_at.desc()))
-    return list(result.scalars().all())
+    return {"applications": list(result.scalars().all())}
 
 
 @router.post("/me/applications", response_model=ApplicationOut, status_code=status.HTTP_201_CREATED)

@@ -7,9 +7,12 @@ class ApplicationsRepository {
   final ApiClient _api;
 
   Future<List<Application>> list() async {
-    final response = await _api.get<Map<String, dynamic>>('/applications');
-    final raw = response.data!;
-    final items = raw['items'] ?? raw['applications'] ?? raw['results'];
+    final response = await _api.get<dynamic>('/users/me/applications');
+    final raw = response.data;
+    final items =
+        raw is Map<String, dynamic>
+        ? raw['items'] ?? raw['applications'] ?? raw['results'] ?? raw
+        : raw;
     final list = <Application>[];
     if (items is List) {
       for (final e in items) {
@@ -24,7 +27,7 @@ class ApplicationsRepository {
     String? notes,
   }) async {
     final response = await _api.post<Map<String, dynamic>>(
-      '/applications',
+      '/users/me/applications',
       data: {'job_id': jobId, if (notes != null && notes.isNotEmpty) 'notes': notes},
     );
     return Application.fromJson(response.data!);
@@ -32,7 +35,7 @@ class ApplicationsRepository {
 
   Future<Application> updateStatus(String id, ApplicationStatus status) async {
     final response = await _api.patch<Map<String, dynamic>>(
-      '/applications/$id',
+      '/users/me/applications/$id',
       data: {'status': status.name},
     );
     return Application.fromJson(response.data!);

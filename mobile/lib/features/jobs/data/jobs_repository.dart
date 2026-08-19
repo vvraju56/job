@@ -114,18 +114,10 @@ class JobsRepository {
   }
 
   Future<List<Job>> savedJobs() async {
-    final response = await _api.get<Map<String, dynamic>>(
+    final response = await _api.get<dynamic>(
       '/users/me/saved-jobs',
     );
-    final raw = response.data!;
-    final items = raw['items'] ?? raw['jobs'] ?? raw['results'];
-    if (items is List) {
-      return items
-          .whereType<Map<String, dynamic>>()
-          .map(Job.fromJson)
-          .toList();
-    }
-    return const [];
+    return _parseJobs(response.data);
   }
 
   Future<void> saveJob(String jobId) async {
@@ -137,9 +129,13 @@ class JobsRepository {
   }
 
   List<Job> _parseJobs(dynamic raw) {
-    if (raw is! List) return const [];
+    dynamic items = raw;
+    if (raw is Map<String, dynamic>) {
+      items = raw['jobs'] ?? raw['items'] ?? raw['results'];
+    }
+    if (items is! List) return const [];
     final jobs = <Job>[];
-    for (final e in raw) {
+    for (final e in items) {
       if (e is Map<String, dynamic>) jobs.add(Job.fromJson(e));
     }
     return jobs;

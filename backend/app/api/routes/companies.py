@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentAdmin, DbDep
 from app.models.models import Company, Job
-from app.schemas.schemas import CompanyCreate, CompanyOut, CompanyUpdate
+from app.schemas.schemas import CompaniesOut, CompanyCreate, CompanyOut, CompanyUpdate
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -36,8 +36,8 @@ async def list_companies(
     return [await _company_out(db, c) for c in companies]
 
 
-@router.get("/featured", response_model=list[CompanyOut])
-async def featured_companies(db: DbDep, limit: int = Query(6, ge=1, le=30)) -> list[CompanyOut]:
+@router.get("/featured", response_model=CompaniesOut)
+async def featured_companies(db: DbDep, limit: int = Query(6, ge=1, le=30)) -> dict:
     stmt = (
         select(Company)
         .join(Job, Job.company_id == Company.id, isouter=True)
@@ -48,11 +48,11 @@ async def featured_companies(db: DbDep, limit: int = Query(6, ge=1, le=30)) -> l
     )
     result = await db.execute(stmt)
     companies = list(result.scalars().all())
-    return [await _company_out(db, c) for c in companies]
+    return {"companies": [await _company_out(db, c) for c in companies]}
 
 
-@router.get("/trending", response_model=list[CompanyOut])
-async def trending_companies(db: DbDep, limit: int = Query(10, ge=1, le=50)) -> list[CompanyOut]:
+@router.get("/trending", response_model=CompaniesOut)
+async def trending_companies(db: DbDep, limit: int = Query(10, ge=1, le=50)) -> dict:
     """Companies ranked by open job volume, aggregated from the jobs table."""
     stmt = (
         select(Company)
@@ -64,7 +64,7 @@ async def trending_companies(db: DbDep, limit: int = Query(10, ge=1, le=50)) -> 
     )
     result = await db.execute(stmt)
     companies = list(result.scalars().all())
-    return [await _company_out(db, c) for c in companies]
+    return {"companies": [await _company_out(db, c) for c in companies]}
 
 
 @router.get("/{slug}", response_model=CompanyOut)

@@ -96,13 +96,13 @@ async def test_alert_crud(client: AsyncClient, auth_headers: dict[str, str]) -> 
     alert_id = created.json()["id"]
 
     alerts = await client.get("/api/v1/notifications/alerts", headers=auth_headers)
-    assert any(a["id"] == alert_id for a in alerts.json())
+    assert any(a["id"] == alert_id for a in alerts.json()["alerts"])
 
     deleted = await client.delete(f"/api/v1/notifications/alerts/{alert_id}", headers=auth_headers)
     assert deleted.status_code == 204
 
     alerts = await client.get("/api/v1/notifications/alerts", headers=auth_headers)
-    assert not any(a["id"] == alert_id for a in alerts.json())
+    assert not any(a["id"] == alert_id for a in alerts.json()["alerts"])
 
 
 async def test_register_device_token(client: AsyncClient, auth_headers: dict[str, str]) -> None:

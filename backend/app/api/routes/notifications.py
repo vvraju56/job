@@ -6,23 +6,30 @@ from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbDep
 from app.models.models import Alert, DeviceToken, Notification
-from app.schemas.schemas import AlertCreate, AlertOut, DeviceTokenCreate, NotificationOut
+from app.schemas.schemas import (
+    AlertCreate,
+    AlertOut,
+    AlertsOut,
+    DeviceTokenCreate,
+    NotificationOut,
+    NotificationsOut,
+)
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
-@router.get("/", response_model=list[NotificationOut])
+@router.get("/", response_model=NotificationsOut)
 async def list_notifications(
     db: DbDep,
     user: CurrentUser,
     unread_only: bool = False,
     limit: int = Query(50, ge=1, le=200),
-) -> list[Notification]:
+) -> dict:
     stmt = select(Notification).where(Notification.user_id == user.id)
     if unread_only:
         stmt = stmt.where(Notification.read.is_(False))
     result = await db.execute(stmt.order_by(Notification.created_at.desc()).limit(limit))
-    return list(result.scalars().all())
+    return {"notifications": list(result.scalars().all())}
 
 
 @router.post("/{notification_id}/read", response_model=NotificationOut)
@@ -56,10 +63,10 @@ async def create_alert(db: DbDep, user: CurrentUser, payload: AlertCreate) -> Al
     return alert
 
 
-@router.get("/alerts", response_model=list[AlertOut])
-async def list_alerts(db: DbDep, user: CurrentUser) -> list[Alert]:
+@router.get("/alerts", response_model=AlertsOut)
+async def list_alerts(db: DbDep, user: CurrentUser) -> dict:
     result = await db.execute(select(Alert).where(Alert.user_id == user.id).order_by(Alert.created_at.desc()))
-    return list(result.scalars().all())
+    return {"alerts": list(result.scalars().all())}
 
 
 @router.delete("/alerts/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)

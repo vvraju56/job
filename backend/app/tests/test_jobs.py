@@ -160,13 +160,13 @@ async def test_save_and_unsave_job(client: AsyncClient, auth_headers: dict[str, 
     assert save.json()["saved"] is True
 
     saved = await client.get("/api/v1/users/me/saved-jobs", headers=auth_headers)
-    assert len(saved.json()) == 1
+    assert len(saved.json()["jobs"]) == 1
 
     unsave = await client.delete(f"/api/v1/jobs/{job_id}/save", headers=auth_headers)
     assert unsave.status_code == 204
 
     saved = await client.get("/api/v1/users/me/saved-jobs", headers=auth_headers)
-    assert len(saved.json()) == 0
+    assert len(saved.json()["jobs"]) == 0
 
 
 async def test_apply_tracking(client: AsyncClient, auth_headers: dict[str, str]) -> None:
@@ -186,7 +186,7 @@ async def test_apply_tracking(client: AsyncClient, auth_headers: dict[str, str])
     app_id = resp.json()["id"]
 
     apps = await client.get("/api/v1/users/me/applications", headers=auth_headers)
-    assert len(apps.json()) == 1
+    assert len(apps.json()["applications"]) == 1
 
     update = await client.patch(
         f"/api/v1/users/me/applications/{app_id}",

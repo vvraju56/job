@@ -101,6 +101,10 @@ class CompanyOut(CompanyBase):
     open_positions: int = 0
 
 
+class CompaniesOut(BaseModel):
+    companies: list[CompanyOut]
+
+
 class CompanyUpdate(BaseModel):
     name: str | None = None
     logo: str | None = None
@@ -180,6 +184,10 @@ class JobList(BaseModel):
     items: list[JobOut]
 
 
+class SavedJobsOut(BaseModel):
+    jobs: list[JobOut]
+
+
 class JobSearchParams(BaseModel):
     q: str | None = None
     location: str | None = None
@@ -230,6 +238,10 @@ class ApplicationOut(BaseModel):
     applied_at: datetime
 
 
+class ApplicationsOut(BaseModel):
+    applications: list[ApplicationOut]
+
+
 # ------------------------------------------------------------
 # Searches / Notifications / Alerts
 # ------------------------------------------------------------
@@ -254,6 +266,10 @@ class NotificationOut(BaseModel):
     created_at: datetime
 
 
+class NotificationsOut(BaseModel):
+    notifications: list[NotificationOut]
+
+
 class AlertCreate(BaseModel):
     query: str
     filters: dict[str, Any] = {}
@@ -269,6 +285,10 @@ class AlertOut(BaseModel):
     frequency: str = "daily"
     active: bool = True
     created_at: datetime
+
+
+class AlertsOut(BaseModel):
+    alerts: list[AlertOut]
 
 
 class DeviceTokenCreate(BaseModel):
