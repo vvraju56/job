@@ -23,8 +23,26 @@ def UUIDType():
     return PG_UUID(as_uuid=False).with_variant(CHAR(36), "sqlite", "mysql")
 
 
+def _async_database_url(url: str) -> str:
+    """Coerce a sync Postgres URL to the asyncpg driver.
+
+    Supabase's copyable connection strings use `postgresql://`. SQLAlchemy's
+    asyncio extension requires `postgresql+asyncpg://` for Postgres and
+    `sqlite+aiosqlite://` for SQLite, so normalize both automatically.
+    """
+    if url.startswith("postgresql://") or url.startswith("postgres://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1).replace(
+            "postgres://", "postgresql+asyncpg://", 1
+        )
+    if url.startswith("sqlite://"):
+        if url.startswith("sqlite+aiosqlite://") or url.startswith("sqlite+pysqlite://"):
+            return url
+        return url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+    return url
+
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    _async_database_url(settings.DATABASE_URL),
     echo=settings.DEBUG and settings.APP_ENV == "development",
     pool_pre_ping=True,
 )
