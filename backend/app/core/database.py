@@ -26,14 +26,27 @@ def UUIDType():
 def _async_database_url(url: str) -> str:
     """Coerce a sync Postgres URL to the asyncpg driver.
 
-    Supabase's copyable connection strings use `postgresql://`. SQLAlchemy's
-    asyncio extension requires `postgresql+asyncpg://` for Postgres and
-    `sqlite+aiosqlite://` for SQLite, so normalize both automatically.
+    Supabase's copyable connection strings use `postgresql://` and commonly
+    carry `?sslmode=require`. SQLAlchemy's asyncio extension requires
+    `postgresql+asyncpg://` for Postgres and `sqlite+aiosqlite://` for SQLite.
+    asyncpg's dialect does not understand the `sslmode` query parameter (it
+    raises `TypeError: connect() got an unexpected keyword argument 'sslmode'`),
+    so translate `sslmode` to asyncpg's native `ssl=true`.
     """
     if url.startswith("postgresql://") or url.startswith("postgres://"):
-        return url.replace("postgresql://", "postgresql+asyncpg://", 1).replace(
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1).replace(
             "postgres://", "postgresql+asyncpg://", 1
         )
+        if "sslmode=" in url:
+            base, _, query = url.partition("?")
+            params = []
+            for p in query.split("&"):
+                if p.startswith("sslmode="):
+                    params.append("ssl=" + p.split("=", 1)[1])
+                elif p:
+                    params.append(p)
+            return base + "?" + "&".join(params)
+        return url
     if url.startswith("sqlite://"):
         if url.startswith("sqlite+aiosqlite://") or url.startswith("sqlite+pysqlite://"):
             return url
