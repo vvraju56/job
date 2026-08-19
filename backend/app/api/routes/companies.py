@@ -51,6 +51,22 @@ async def featured_companies(db: DbDep, limit: int = Query(6, ge=1, le=30)) -> l
     return [await _company_out(db, c) for c in companies]
 
 
+@router.get("/trending", response_model=list[CompanyOut])
+async def trending_companies(db: DbDep, limit: int = Query(10, ge=1, le=50)) -> list[CompanyOut]:
+    """Companies ranked by open job volume, aggregated from the jobs table."""
+    stmt = (
+        select(Company)
+        .join(Job, Job.company_id == Company.id)
+        .where(Job.active.is_(True))
+        .group_by(Company.id)
+        .order_by(func.count(Job.id).desc(), Company.name.asc())
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    companies = list(result.scalars().all())
+    return [await _company_out(db, c) for c in companies]
+
+
 @router.get("/{slug}", response_model=CompanyOut)
 async def company_detail(db: DbDep, slug: str) -> CompanyOut:
     result = await db.execute(select(Company).where(Company.slug == slug))
