@@ -35,6 +35,14 @@ def upgrade() -> None:
 
     existing = {uc["name"] for uc in inspector.get_unique_constraints("jobs")}
     if "uq_jobs_source_external" not in existing:
+        # Seed/test data may contain duplicate (source, external_id) rows from
+        # before the constraint existed. Delete duplicates (keep the lowest id)
+        # so the unique index can be built.
+        op.execute(
+            "DELETE FROM jobs a USING jobs b "
+            "WHERE a.id > b.id AND a.source = b.source AND "
+            "(a.external_id IS NOT DISTINCT FROM b.external_id)"
+        )
         op.create_unique_constraint("uq_jobs_source_external", "jobs", ["source", "external_id"])
 
 
