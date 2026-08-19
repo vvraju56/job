@@ -24,6 +24,7 @@ Thumbs.db
 .env.*
 !.env.example
 apikey.txt
+keys.env
 
 # Firebase service accounts & config (regenerated per environment)
 firebase-service-account.json
