@@ -8,6 +8,12 @@ JSearch (OpenWebNinja) external ids are ~500 characters, so `external_id`
 moves from VARCHAR(255) to TEXT. A unique (source, external_id) constraint
 mirrors the ORM model and the updated supabase/schema.sql so upserts dedupe
 cleanly regardless of how a database was provisioned.
+
+Fresh databases are already created by 0001 via `Base.metadata.create_all`
+(which uses the current ORM model: TEXT `external_id` + the unique
+constraint), so this migration must be idempotent. On PostgreSQL a failed
+statement aborts the enclosing transaction, so we inspect the schema first
+instead of catching exceptions.
 """
 import sqlalchemy as sa
 from alembic import op
@@ -20,23 +26,25 @@ depends_on = None
 
 def upgrade() -> None:
     bind = op.get_bind()
-    # SQLite cannot alter a column's type in place; the fresh schema.sql / ORM
-    # create_all already use TEXT. On PostgreSQL, widen the column explicitly.
-    if bind.dialect.name == "postgresql":
-        op.alter_column("jobs", "external_id", existing_type=sa.VARCHAR(255), type_=sa.TEXT(), existing_nullable=True)
+    inspector = sa.inspect(bind)
 
-    # Add the uniqueness constraint (idempotent-ish; Postgres supports IF NOT EXISTS).
-    try:
+    if bind.dialect.name == "postgresql":
+        columns = {col["name"]: col["type"] for col in inspector.get_columns("jobs")}
+        if "external_id" in columns and not isinstance(columns["external_id"], sa.TEXT):
+            op.alter_column("jobs", "external_id", existing_type=sa.VARCHAR(255), type_=sa.TEXT(), existing_nullable=True)
+
+    existing = {uc["name"] for uc in inspector.get_unique_constraints("jobs")}
+    if "uq_jobs_source_external" not in existing:
         op.create_unique_constraint("uq_jobs_source_external", "jobs", ["source", "external_id"])
-    except Exception:  # noqa: BLE001  (constraint may already exist on some setups)
-        pass
 
 
 def downgrade() -> None:
     bind = op.get_bind()
-    try:
+    inspector = sa.inspect(bind)
+    existing = {uc["name"] for uc in inspector.get_unique_constraints("jobs")}
+    if "uq_jobs_source_external" in existing:
         op.drop_constraint("uq_jobs_source_external", "jobs", type_="unique")
-    except Exception:  # noqa: BLE001
-        pass
     if bind.dialect.name == "postgresql":
-        op.alter_column("jobs", "external_id", existing_type=sa.TEXT(), type_=sa.VARCHAR(255), existing_nullable=True)
+        columns = {col["name"]: col["type"] for col in inspector.get_columns("jobs")}
+        if "external_id" in columns and isinstance(columns["external_id"], sa.TEXT):
+            op.alter_column("jobs", "external_id", existing_type=sa.TEXT(), type_=sa.VARCHAR(255), existing_nullable=True)
